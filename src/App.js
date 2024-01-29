@@ -5,12 +5,17 @@ import Create from '../src/Pages/Create/Create'
 import Login from '../src/Pages/Login/Login'
 import Signup from '../src/Pages/Signup/Signup'
 import Project from '../src/Pages/Project/Project'
+import Navbar from './Components/Navbar';
+import Sidebar from './Components/Sidebar';
 
 function App() {
   return (
     <div className="App">
+      
       <BrowserRouter>
+      <Sidebar></Sidebar>
       <div className='container'>
+        <Navbar></Navbar>
         <Switch>
           <Route exact path='/'>
             <Dashboard></Dashboard>
@@ -21,10 +26,10 @@ function App() {
           <Route exact path='/project/:id'>
             <Project></Project>
           </Route>
-          <Route exact path='/login/:id'>
+          <Route exact path='/login'>
             <Login></Login>
           </Route>
-          <Route exact path='/signup/:id'>
+          <Route exact path='/signup'>
             <Signup></Signup>
           </Route>
         </Switch>
