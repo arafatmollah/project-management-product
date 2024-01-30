@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useCollection } from '../../hooks/useCollection'
+import { useAuthContext } from '../../hooks/useAuthContext'
+import { timestamp } from '../../Firebase/config'
 import Select from 'react-select'
 
 // styles
@@ -12,6 +15,10 @@ const categories = [
 ]
 
 export default function Create() {
+  const { user } = useAuthContext()
+  const { documents } = useCollection('users')
+  const [users, setUsers] = useState([])
+
   // form field values
   const [name, setName] = useState('')
   const [details, setDetails] = useState('')
@@ -20,10 +27,52 @@ export default function Create() {
   const [assignedUsers, setAssignedUsers] = useState([])
   const [formError, setFormError] = useState(null)
 
+  // create user values for react-select
+  useEffect(() => {
+    if(documents) {
+      setUsers(documents.map(user => {
+        return { value: {...user, id: user.id}, label: user.displayName }
+      }))
+    }
+  }, [documents])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setFormError(null)
 
-    console.log(name, details, dueDate, category.value, assignedUsers)
+    if (!category) {
+      setFormError('Please select a project category.')
+      return
+    }
+    if (assignedUsers.length < 1) {
+      setFormError('Please assign the project to at least 1 user')
+      return
+    }
+
+    const assignedUsersList = assignedUsers.map(u => {
+      return { 
+        displayName: u.value.displayName, 
+        photoURL: u.value.photoURL,
+        id: u.value.id
+      }
+    })
+    const createdBy = { 
+      displayName: user.displayName, 
+      photoURL: user.photoURL,
+      id: user.uid
+    }
+
+    const project = {
+      name,
+      details,
+      category: category.value,
+      dueDate: timestamp.fromDate(new Date(dueDate)),
+      assignedUsersList, 
+      createdBy,
+      comments: []
+    }
+
+    console.log(project)
   }
 
   return (
@@ -65,7 +114,11 @@ export default function Create() {
         </label>
         <label>
           <span>Assign to:</span>
-          {/* select here later */}
+          <Select
+            onChange={(option) => setAssignedUsers(option)}
+            options={users}
+            isMulti
+          />
         </label>
 
         <button className="btn">Add Project</button>
