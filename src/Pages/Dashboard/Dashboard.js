@@ -1,10 +1,11 @@
 import { useCollection } from '../../hooks/useCollection'
 
 // components
-import Projectlist from '../../Components/Projectlist'
+import ProjectList from '../../Components/Projectlist'
 
 // styles
 import './Dashboard.css'
+import ProjectFilter from './ProjectFilter'
 
 export default function Dashboard() {
   const { documents, error } = useCollection('projects')
@@ -13,7 +14,8 @@ export default function Dashboard() {
     <div>
       <h2 className="page-title">Dashboard</h2>
       {error && <p className="error">{error}</p>}
-      {documents && <Projectlist projects={documents} />}
+      {documents && <ProjectFilter />}
+      {documents && <ProjectList projects={documents} />}
     </div>
   )
 }
